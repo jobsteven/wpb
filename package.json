@@ -1,0 +1,26 @@
+{
+  "name": "wbp",
+  "version": "1.0.0",
+  "description": "wbp is a versatile building syestem focusing on tasks elaboration in more flexible ways.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/AlexWang1987/wpb.git"
+  },
+  "keywords": [
+    "task",
+    "elaboration",
+    "building",
+    "system",
+    "webpack"
+  ],
+  "author": "AlexWang <1669499355@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlexWang1987/wpb/issues"
+  },
+  "homepage": "https://github.com/AlexWang1987/wpb#readme"
+}
