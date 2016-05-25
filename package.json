@@ -22,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/AlexWang1987/wpb/issues"
   },
-  "homepage": "https://github.com/AlexWang1987/wpb#readme"
+  "homepage": "https://github.com/AlexWang1987/wpb#readme",
+  "dependencies": {
+    "bluebird": "3.4.0"
+  },
+  "wbp": {
+    "home": "~/.wbp"
+  }
 }
