@@ -1,6 +1,6 @@
 {
   "name": "wbp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "wbp is a versatile building syestem focusing on tasks elaboration in more flexible ways.",
   "main": "index.js",
   "scripts": {
