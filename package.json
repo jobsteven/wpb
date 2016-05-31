@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+ssh://git@github.com/AlexWang1987/wpb.git"
   },
+  "bin": {
+    "wbp": "./index.js"
+  },
   "keywords": [
     "task",
     "elaboration",
@@ -24,7 +27,9 @@
   },
   "homepage": "https://github.com/AlexWang1987/wpb#readme",
   "dependencies": {
-    "bluebird": "3.4.0"
+    "promisify-cli": "^3.0.4",
+    "promisify-fs": "^1.0.26",
+    "promisify-npm": "^1.0.13"
   },
   "wbp": {
     "home": "~/.wbp"
