@@ -5,6 +5,7 @@
 var cli = require('promisify-cli');
 var npm = require('promisify-npm');
 var fs = require('promisify-fs');
+var npmlog = require('npmlog');
 
 /**
  * WBP Class
@@ -16,7 +17,7 @@ var WBP = function () {}
  * {string}
  */
 WBP.prototype.normalize = function (plugin_name) {
-  var prefix = this.options.prefix === false ? '' : 'wbp-';
+  var prefix = this.options.hasOwnProperty('prefix') && this.options.prefix === false ? '' : 'wbp-';
   if (!~plugin_name.indexOf(prefix)) return plugin_name = prefix + plugin_name;
   return plugin_name;
 }
@@ -25,7 +26,7 @@ WBP.prototype.normalize = function (plugin_name) {
  * call other plugins in wbp ecosystem, they may be downloaded on-demand.
  * promise
  */
-WBP.prototype.call = function (plugin_name) {
+WBP.prototype.call = function (plugin_name, params, options) {
   var self = this;
   var plugin_name = self.normalize(plugin_name);
 
@@ -42,6 +43,10 @@ WBP.prototype.call = function (plugin_name) {
     .then(function (plugin_path) {
       //associated informations.
       options.__plugindir = plugin_path;
+      options.info = npmlog.info;
+      options.error = npmlog.error;
+      options.warn = npmlog.warn;
+
       //plugin is found.
       return require(plugin_path)(params, options, self);
     })
@@ -66,7 +71,7 @@ WBP.prototype.error = function () {};
 WBP.prototype.loadConfig = function () {
   var self = this;
   return fs
-    .readFile('./package.json')
+    .readFile(__dirname + '/../package.json')
     .then(JSON.parse)
     .get('wbp')
     .then(function (wbp_conf) {
@@ -81,7 +86,7 @@ WBP.prototype.loadConfig = function () {
 WBP.prototype.initwbp = function () {
   var self = this;
   //wbp_home library
-  this.home_path = this.wbp_conf.home.replace('~', process.env['HOME']);
+  self.home_path = self.wbp_conf.home.replace('~', process.env['HOME']);
 
   return cli()
     .then(function (cli) {
@@ -91,16 +96,23 @@ WBP.prototype.initwbp = function () {
       }
       self.options = cli.options;
       self.params = cli.params;
-      return cli.params.shift();
     })
 }
 
-var wbp = new WBP();
+/**
+ * call Plugin based on first param
+ * @return {[type]} [description]
+ */
+WBP.prototype.callPlugin = function () {
+  return this.call(this.params.shift());
+}
 
+//wbp is just a task collabrator.
+var wbp = new WBP();
 wbp
   .loadConfig()
   .then(wbp.initwbp.bind(wbp))
-  .then(wbp.call.bind(wbp))
+  .then(wbp.callPlugin.bind(wbp))
   .catch(function (e) {
     console.error('catch->', e);
   })
