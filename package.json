@@ -28,17 +28,16 @@
   "dependencies": {
     "npmlog": "^3.0.0",
     "promisify-cli": "^1.0.35",
-    "promisify-fs": "^1.0.26",
+    "promisify-fs": "^1.0.36",
     "promisify-npm": "^1.0.13",
-    "promisify-bash": "^3.0.8"
+    "promisify-bash": "^1.0.6"
   },
   "wbp": {
     "home": "~/.wbp"
   },
-  "cli": [
-    {
-      "flag": "-p, --prefix",
-      "desc": "changing or removing prefix --no-prefix, default: wbp-"
-    }
-  ]
+  "cli": [{
+    "flag": "-p, --prefix",
+    "desc": "changing or removing prefix --no-prefix, default: wbp-"
+  }]
 }
+
