@@ -5,12 +5,32 @@
 var cli = require('promisify-cli');
 var npm = require('promisify-npm');
 var fs = require('promisify-fs');
+var path = require('path');
 var npmlog = require('npmlog');
+/*npm log configuration*/
+npmlog.heading = 'wbp';
+
+/**log utils**/
+function getModuleLog(module_name) {
+  return {
+    info: function (message, prefix) {
+      npmlog.info(module_name + (prefix || ''), message);
+    },
+    warn: function (message, prefix) {
+      npmlog.warn(module_name + (prefix || ''), message);
+    },
+    error: function (message, prefix) {
+      npmlog.error(module_name + (prefix || ''), message);
+    },
+  }
+}
 
 /**
  * WBP Class
  */
-var WBP = function () {}
+var WBP = function () {
+  this.log = getModuleLog('wbp');
+}
 
 /**
  * plugin name need to be normalized
@@ -29,12 +49,11 @@ WBP.prototype.normalize = function (plugin_name) {
 WBP.prototype.call = function (plugin_name, params, options) {
   var self = this;
   var plugin_name = self.normalize(plugin_name);
-
   npm
-    .hasInstalled(plugin_name)
+    .hasInstalled(plugin_name, self.wbp_home)
     .then(function (installed) {
       if (!installed) {
-        return npm.install(plugin_name)
+        return npm.install(plugin_name, self.wbp_home);
       }
     })
     .then(function () {
@@ -42,13 +61,32 @@ WBP.prototype.call = function (plugin_name, params, options) {
     })
     .then(function (plugin_path) {
       //associated informations.
-      options.__plugindir = plugin_path;
-      options.info = npmlog.info;
-      options.error = npmlog.error;
-      options.warn = npmlog.warn;
+      var pluginContext = Object.assign({
+          //constants
+          __plugindir: plugin_path,
+          __cwd: process.cwd(),
+          __name: plugin_name
+        },
+        //utils log
+        getModuleLog(plugin_name),
+        //wbp utils
+        {
+          call: self.call.bind(self),
+          getCwdPath: function (cwdPath) {
+            return path.resolve(process.cwd(), cwdPath);
+          }
+        });
 
       //plugin is found.
-      return require(plugin_path)(params, options, self);
+      var pluginExports = require(plugin_path);
+
+      self.log.info(plugin_name + ' is loaded and invoked.');
+
+      if (pluginExports && pluginExports instanceof Function) {
+        return pluginExports.call(pluginContext, self.params, self.options);
+      } else {
+        throw 'the plugin named ' + plugin_name + 'should export a function';
+      }
     })
 }
 
@@ -69,6 +107,8 @@ WBP.prototype.error = function () {};
  * @return {[type]} [description]
  */
 WBP.prototype.loadConfig = function () {
+  this.log.info('loading wbp configuration.');
+
   var self = this;
   return fs
     .readFile(__dirname + '/../package.json')
@@ -84,9 +124,11 @@ WBP.prototype.loadConfig = function () {
  * @return {[type]} [description]
  */
 WBP.prototype.initwbp = function () {
+  this.log.info('parsing command line interface.');
+
   var self = this;
   //wbp_home library
-  self.home_path = self.wbp_conf.home.replace('~', process.env['HOME']);
+  self.wbp_home = self.wbp_conf.home.replace('~', process.env['HOME']);
 
   return cli()
     .then(function (cli) {
@@ -94,6 +136,7 @@ WBP.prototype.initwbp = function () {
       if (!cli.params.length) {
         cli.help();
       }
+
       self.options = cli.options;
       self.params = cli.params;
     })
