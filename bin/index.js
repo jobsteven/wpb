@@ -79,28 +79,14 @@ WBP.prototype.call = function (plugin_name, params, options) {
 
       //plugin is found.
       var pluginExports = require(plugin_path);
-
-      self.log.info(plugin_name + ' is loaded and invoked.');
-
       if (pluginExports && pluginExports instanceof Function) {
+        self.log.info(plugin_name + ' is loaded and invoked.');
         return pluginExports.call(pluginContext, self.params, self.options);
       } else {
         throw 'the plugin named ' + plugin_name + 'should export a function';
       }
     })
 }
-
-/**
- * wbp utils log
- */
-WBP.prototype.log = function () {
-
-};
-
-/**
- * wbp utils error
- */
-WBP.prototype.error = function () {};
 
 /**
  * wbp configuration from package
