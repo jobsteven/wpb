@@ -11,7 +11,11 @@ fs
       home_path = home_path.replace('~', process.env.HOME);
     }
     return npm.initDefaultPkg(home_path, {
-      description: 'This is the wbp plugins repository.'
+      author: process.env['USER'] || '',
+      dependencies: {},
+      version: '0.0.0',
+      description: 'This is the wbp plugins repository.',
+      license: "MIT"
     });
   })
   .then(function (result) {
