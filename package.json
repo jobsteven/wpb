@@ -1,6 +1,6 @@
 {
   "name": "wbp",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "wbp is a versatile building syestem focusing on tasks elaboration in more flexible ways.",
   "bin": {
     "wbp": "./bin/index.js"
@@ -35,9 +35,10 @@
   "wbp": {
     "home": "~/.wbp"
   },
-  "cli": [{
-    "flag": "-p, --prefix",
-    "desc": "changing or removing prefix --no-prefix, default: wbp-"
-  }]
+  "cli": [
+    {
+      "flag": "-p, --prefix",
+      "desc": "changing or removing prefix --no-prefix, default: wbp-"
+    }
+  ]
 }
-
