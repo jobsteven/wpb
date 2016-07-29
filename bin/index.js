@@ -53,6 +53,7 @@ WBP.prototype.call = function (plugin_name, params, options) {
     .hasInstalled(plugin_name, self.wbp_home)
     .then(function (installed) {
       if (!installed) {
+        self.log.info('wbp is going to install plugin [' + plugin_name + ']');
         return npm.install(plugin_name, self.wbp_home);
       }
     })
