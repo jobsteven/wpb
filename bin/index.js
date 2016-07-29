@@ -64,9 +64,10 @@ WBP.prototype.call = function (plugin_name, params, options) {
       //associated informations.
       var pluginContext = Object.assign({
           //constants
-          __plugindir: plugin_path,
+          __plugin_dir: plugin_path,
+          __plug_name: plugin_name,
           __cwd: process.cwd(),
-          __name: plugin_name
+          __home: self.wbp_home
         },
         //utils log
         getModuleLog(plugin_name),
