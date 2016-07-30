@@ -10,13 +10,18 @@ fs
     if (home_path.substr(0, 1) == '~') {
       home_path = home_path.replace('~', process.env.HOME);
     }
-    return npm.initDefaultPkg(home_path, {
-      author: process.env['USER'] || '',
-      dependencies: {},
-      version: '0.0.0',
-      description: 'This is the wbp plugins repository.',
-      license: "MIT"
-    });
+    return npm
+      .initDefaultPkg(home_path, {
+        author: process.env['USER'] || '',
+        dependencies: {},
+        version: '0.0.0',
+        description: 'This is the wbp plugins repository.',
+        license: "MIT",
+        main: 'index.js'
+      })
+      .then(function () {
+        return fs.writeFile(home_path + '/index.js', '');
+      })
   })
   .then(function (result) {
     console.log('wbp has been installed, successfully.');
