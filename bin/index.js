@@ -102,16 +102,16 @@ WBP.prototype.call = function (plugin_name, params, options) {
 /**
  * @method checkNewUpdate
  * @param  {string}       plugin_name
- * @param  {string}       old_version
+ * @param  {string}       pkg_range
  * @return {promise}
  */
-WBP.prototype.checkNewUpdate = function (plugin_name, old_version) {
+WBP.prototype.checkNewUpdate = function (plugin_name, pkg_range) {
   var self = this;
-  self.log.info('wbp is checking new updates for ' + plugin_name + '[' + old_version + ']');
+  self.log.info('wbp is checking new updates for ' + plugin_name + '[' + pkg_range + ']');
   return npm
     .getLatestTag(plugin_name)
     .then(function (new_version) {
-      return semver.gt(new_version, old_version) ? new_version : undefined;
+      return semver.gtr(new_version, pkg_range) ? new_version : undefined;
     })
 }
 
