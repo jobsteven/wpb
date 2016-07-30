@@ -50,6 +50,7 @@ WBP.prototype.normalize = function (plugin_name) {
 WBP.prototype.call = function (plugin_name, params, options) {
   var self = this;
   var plugin_name = self.normalize(plugin_name);
+  console.log(plugin_name, self.wbp_home);
   npm
     .hasInstalled(plugin_name, self.wbp_home)
     .then(function (plugin_version) {
@@ -111,7 +112,7 @@ WBP.prototype.checkNewUpdate = function (plugin_name, pkg_range) {
   return npm
     .getLatestTag(plugin_name)
     .then(function (new_version) {
-      return semver.gtr(new_version, pkg_range) ? new_version : undefined;
+      return semver.satisfies(new_version, pkg_range) && !~pkg_range.indexOf(new_version) ? new_version : undefined;
     })
 }
 

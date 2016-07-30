@@ -29,8 +29,8 @@
     "npmlog": "^3.0.0",
     "promisify-bash": "^1.0.6",
     "promisify-cli": "^3.0.9",
-    "promisify-fs": "^1.0.36",
-    "promisify-npm": "^1.0.22",
+    "promisify-fs": "^1.0.38",
+    "promisify-npm": "^1.0.25",
     "semver": "^5.3.0"
   },
   "wbp": {
