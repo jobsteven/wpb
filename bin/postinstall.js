@@ -20,7 +20,7 @@ fs
         main: 'index.js'
       })
       .then(function () {
-        return fs.writeFile(home_path + '/index.js', '');
+        return fs.writeFile(home_path + '/index.js', '//wbp home Library');
       })
   })
   .then(function (result) {
