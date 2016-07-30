@@ -111,7 +111,7 @@ WBP.prototype.checkNewUpdate = function (plugin_name, old_version) {
   return npm
     .getLatestTag(plugin_name)
     .then(function (new_version) {
-      return semver.lg(new_version, old_version) ? new_version : undefined;
+      return semver.gt(new_version, old_version) ? new_version : undefined;
     })
 }
 
