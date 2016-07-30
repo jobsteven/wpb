@@ -5,6 +5,7 @@
 var cli = require('promisify-cli');
 var npm = require('promisify-npm');
 var fs = require('promisify-fs');
+var semver = require('semver');
 var path = require('path');
 var npmlog = require('npmlog');
 /*npm log configuration*/
@@ -51,11 +52,19 @@ WBP.prototype.call = function (plugin_name, params, options) {
   var plugin_name = self.normalize(plugin_name);
   npm
     .hasInstalled(plugin_name, self.wbp_home)
-    .then(function (installed) {
-      if (!installed) {
-        self.log.info('wbp is going to install plugin [' + plugin_name + ']');
-        return npm.install(plugin_name, self.wbp_home);
+    .then(function (plugin_version) {
+      if (!plugin_version) {
+        return self.installPlugin(plugin_name);
       }
+      //AutoCheckUpdate
+      return self
+        .checkNewUpdate(plugin_name, plugin_version)
+        .then(function (new_version) {
+          if (new_version) {
+            self.log.info('wbp has found new update for ' + plugin_name + '[' + new_version + '], Updating starts.');
+            return self.installPlugin(plugin_name);
+          }
+        })
     })
     .then(function () {
       return self.wbp_home + '/node_modules/' + plugin_name;
@@ -88,6 +97,32 @@ WBP.prototype.call = function (plugin_name, params, options) {
         throw 'the plugin named ' + plugin_name + 'should export a function';
       }
     })
+}
+
+/**
+ * @method checkNewUpdate
+ * @param  {string}       plugin_name
+ * @param  {string}       old_version
+ * @return {promise}
+ */
+WBP.prototype.checkNewUpdate = function (plugin_name, old_version) {
+  var self = this;
+  self.log.info('wbp is checking new updates for ' + plugin_name + '[' + old_version + ']');
+  return npm
+    .getLatestTag(plugin_name)
+    .then(function (new_version) {
+      return semver.lg(new_version, old_version) ? new_version : undefined;
+    })
+}
+
+/**
+ * @method installPlugin
+ * @param  {string}      plugin_name
+ * @return {promise}
+ */
+WBP.prototype.installPlugin = function (plugin_name) {
+  this.log.info('wbp is installing plugin [' + plugin_name + ']');
+  return npm.install(plugin_name, this.wbp_home);
 }
 
 /**
