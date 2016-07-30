@@ -1,6 +1,6 @@
 {
   "name": "wbp",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "wbp is a versatile building syestem focusing on tasks elaboration in more flexible ways.",
   "scripts": {
     "postinstall": "node ./bin/postinstall.js"
