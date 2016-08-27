@@ -50,7 +50,6 @@ WBP.prototype.normalize = function (plugin_name) {
 WBP.prototype.call = function (plugin_name, params, options) {
   var self = this;
   var plugin_name = self.normalize(plugin_name);
-  console.log(plugin_name, self.wbp_home);
   npm
     .hasInstalled(plugin_name, self.wbp_home)
     .then(function (plugin_version) {
