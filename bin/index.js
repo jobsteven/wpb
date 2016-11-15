@@ -47,7 +47,7 @@ WBP.prototype.normalize = function (plugin_name) {
  * call other plugins in wbp ecosystem, they may be downloaded on-demand.
  * promise
  */
-WBP.prototype.call = function (plugin_name, params, options) {
+WBP.prototype.call = function (plugin_name) {
   var self = this;
   var plugin_name = self.normalize(plugin_name);
   npm
@@ -57,14 +57,17 @@ WBP.prototype.call = function (plugin_name, params, options) {
         return self.installPlugin(plugin_name);
       }
       //AutoCheckUpdate
-      return self
-        .checkNewUpdate(plugin_name, plugin_version)
-        .then(function (new_version) {
-          if (new_version) {
-            self.log.info('wbp has found new update for ' + plugin_name + '[' + new_version + '], Updating starts.');
-            return self.installPlugin(plugin_name);
-          }
-        })
+      var updateCheck = (self.options['u'] || self.options['update']);
+      if (updateCheck) {
+        return self
+          .checkNewUpdate(plugin_name, plugin_version)
+          .then(function (new_version) {
+            if (new_version) {
+              self.log.info('wbp has found new update for ' + plugin_name + '[' + new_version + '], Updating starts.');
+              return self.installPlugin(plugin_name);
+            }
+          })
+      }
     })
     .then(function () {
       return self.wbp_home + '/node_modules/' + plugin_name;
