@@ -14,13 +14,13 @@ npmlog.heading = 'wbp';
 /**log utils**/
 function getModuleLog(module_name) {
   return {
-    info: function (message, prefix) {
+    info: function(message, prefix) {
       npmlog.info(module_name + (prefix || ''), message);
     },
-    warn: function (message, prefix) {
+    warn: function(message, prefix) {
       npmlog.warn(module_name + (prefix || ''), message);
     },
-    error: function (message, prefix) {
+    error: function(message, prefix) {
       npmlog.error(module_name + (prefix || ''), message);
     },
   }
@@ -29,7 +29,7 @@ function getModuleLog(module_name) {
 /**
  * WBP Class
  */
-var WBP = function () {
+var WBP = function() {
   this.log = getModuleLog('wbp');
 }
 
@@ -37,7 +37,7 @@ var WBP = function () {
  * plugin name need to be normalized
  * {string}
  */
-WBP.prototype.normalize = function (plugin_name) {
+WBP.prototype.normalize = function(plugin_name) {
   var prefix = this.options.hasOwnProperty('prefix') && this.options.prefix === false ? '' : 'wbp-';
   if (!~plugin_name.indexOf(prefix)) return plugin_name = prefix + plugin_name;
   return plugin_name;
@@ -47,12 +47,12 @@ WBP.prototype.normalize = function (plugin_name) {
  * call other plugins in wbp ecosystem, they may be downloaded on-demand.
  * promise
  */
-WBP.prototype.call = function (plugin_name) {
+WBP.prototype.call = function(plugin_name) {
   var self = this;
   var plugin_name = self.normalize(plugin_name);
   npm
     .hasInstalled(plugin_name, self.wbp_home)
-    .then(function (plugin_version) {
+    .then(function(plugin_version) {
       if (!plugin_version) {
         return self.installPlugin(plugin_name);
       }
@@ -61,7 +61,7 @@ WBP.prototype.call = function (plugin_name) {
       if (updateCheck) {
         return self
           .checkNewUpdate(plugin_name, plugin_version)
-          .then(function (new_version) {
+          .then(function(new_version) {
             if (new_version) {
               self.log.info('wbp has found new update for ' + plugin_name + '[' + new_version + '], Updating starts.');
               return self.installPlugin(plugin_name);
@@ -69,10 +69,10 @@ WBP.prototype.call = function (plugin_name) {
           })
       }
     })
-    .then(function () {
+    .then(function() {
       return self.wbp_home + '/node_modules/' + plugin_name;
     })
-    .then(function (plugin_path) {
+    .then(function(plugin_path) {
       //associated informations.
       var pluginContext = Object.assign({
           //constants
@@ -86,7 +86,7 @@ WBP.prototype.call = function (plugin_name) {
         //wbp utils
         {
           call: self.call.bind(self),
-          getCwdPath: function (cwdPath) {
+          getCwdPath: function(cwdPath) {
             return path.resolve(process.cwd(), cwdPath);
           }
         });
@@ -108,12 +108,12 @@ WBP.prototype.call = function (plugin_name) {
  * @param  {string}       pkg_range
  * @return {promise}
  */
-WBP.prototype.checkNewUpdate = function (plugin_name, pkg_range) {
+WBP.prototype.checkNewUpdate = function(plugin_name, pkg_range) {
   var self = this;
   self.log.info('wbp is checking new updates for ' + plugin_name + '[' + pkg_range + ']');
   return npm
     .getLatestTag(plugin_name)
-    .then(function (new_version) {
+    .then(function(new_version) {
       return semver.satisfies(new_version, pkg_range) && !~pkg_range.indexOf(new_version) ? new_version : undefined;
     })
 }
@@ -123,7 +123,7 @@ WBP.prototype.checkNewUpdate = function (plugin_name, pkg_range) {
  * @param  {string}      plugin_name
  * @return {promise}
  */
-WBP.prototype.installPlugin = function (plugin_name) {
+WBP.prototype.installPlugin = function(plugin_name) {
   this.log.info('wbp is installing plugin [' + plugin_name + ']');
   return npm.install(plugin_name, this.wbp_home);
 }
@@ -132,7 +132,7 @@ WBP.prototype.installPlugin = function (plugin_name) {
  * wbp configuration from package
  * @return {[type]} [description]
  */
-WBP.prototype.loadConfig = function () {
+WBP.prototype.loadConfig = function() {
   this.log.info('loading wbp configuration.');
 
   var self = this;
@@ -140,7 +140,7 @@ WBP.prototype.loadConfig = function () {
     .readFile(__dirname + '/../package.json')
     .then(JSON.parse)
     .get('wbp')
-    .then(function (wbp_conf) {
+    .then(function(wbp_conf) {
       self.wbp_conf = wbp_conf;
     })
 }
@@ -149,15 +149,20 @@ WBP.prototype.loadConfig = function () {
  * init wbp constants and cli params and options
  * @return {[type]} [description]
  */
-WBP.prototype.initwbp = function () {
+WBP.prototype.initwbp = function() {
   this.log.info('parsing command line interface.');
 
   var self = this;
   //wbp_home library
-  self.wbp_home = self.wbp_conf.home.replace('~', process.env['HOME']);
+  // self.wbp_home = self.wbp_conf.home.replace('~', process.env['HOME']);
+  self.wbp_home = path.resolve(process.env['HOME'] || (
+    process.env['HOMEDRIVE'] + process.env['HOMEPATH']
+  ), self.wbp_conf.home);
+
+  console.log(self.wbp_home);
 
   return cli()
-    .then(function (cli) {
+    .then(function(cli) {
       //at least on param. help and exit
       if (!cli.params.length) {
         cli.help();
@@ -172,17 +177,17 @@ WBP.prototype.initwbp = function () {
  * call Plugin based on first param
  * @return {[type]} [description]
  */
-WBP.prototype.callPlugin = function () {
+WBP.prototype.callPlugin = function() {
   return this.call(this.params.shift());
 }
 
 //wbp is just a task collabrator.
 var wbp = new WBP();
+
 wbp
   .loadConfig()
   .then(wbp.initwbp.bind(wbp))
   .then(wbp.callPlugin.bind(wbp))
-  .catch(function (e) {
+  .catch(function(e) {
     console.error('catch->', e);
   })
-
