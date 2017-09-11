@@ -154,7 +154,6 @@ WBP.prototype.initwbp = function() {
 
   var self = this;
   //wbp_home library
-  // self.wbp_home = self.wbp_conf.home.replace('~', process.env['HOME']);
   self.wbp_home = path.resolve(process.env['HOME'] || (
     process.env['HOMEDRIVE'] + process.env['HOMEPATH']
   ), self.wbp_conf.home);
