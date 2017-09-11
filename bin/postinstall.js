@@ -5,10 +5,12 @@ var fs = require('promisify-fs');
 fs
   .getModulePackInfo()
   .get('wbp')
-  .then(function (wbp_conf) {
+  .then(function(wbp_conf) {
     var home_path = wbp_conf.home;
     if (home_path.substr(0, 1) == '~') {
-      home_path = home_path.replace('~', process.env.HOME);
+      home_path = path.resolve(process.env['HOME'] || (
+        process.env['HOMEDRIVE'] + process.env['HOMEPATH']
+      ), home_path);
     }
     return npm
       .initDefaultPkg(home_path, {
@@ -19,14 +21,13 @@ fs
         license: "MIT",
         main: 'index.js'
       })
-      .then(function () {
+      .then(function() {
         return fs.writeFile(home_path + '/index.js', '//wbp home Library');
       })
   })
-  .then(function (result) {
+  .then(function(result) {
     console.log('wbp has been installed, successfully.');
   })
-  .catch(function (e) {
+  .catch(function(e) {
     console.log('wbp got errors.', e);
   })
-
