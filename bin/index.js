@@ -159,8 +159,6 @@ WBP.prototype.initwbp = function() {
     process.env['HOMEDRIVE'] + process.env['HOMEPATH']
   ), self.wbp_conf.home);
 
-  console.log(self.wbp_home);
-
   return cli()
     .then(function(cli) {
       //at least on param. help and exit
