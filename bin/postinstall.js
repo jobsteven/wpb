@@ -1,17 +1,15 @@
 /*eslint-disable*/
 var npm = require('promisify-npm');
 var fs = require('promisify-fs');
+var path = require('path');
 
 fs
   .getModulePackInfo()
   .get('wbp')
   .then(function(wbp_conf) {
-    var home_path = wbp_conf.home;
-    if (home_path.substr(0, 1) == '~') {
-      home_path = path.resolve(process.env['HOME'] || (
-        process.env['HOMEDRIVE'] + process.env['HOMEPATH']
-      ), home_path);
-    }
+    var home_path = path.resolve(process.env['HOME'] || (
+      process.env['HOMEDRIVE'] + process.env['HOMEPATH']
+    ), wbp_conf.home);
     return npm
       .initDefaultPkg(home_path, {
         author: process.env['USER'] || '',

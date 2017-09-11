@@ -36,10 +36,8 @@
   "wbp": {
     "home": ".wbp"
   },
-  "cli": [
-    {
-      "flag": "-p, --prefix",
-      "desc": "changing or removing prefix --no-prefix, default: wbp-"
-    }
-  ]
+  "cli": [{
+    "flag": "-p, --prefix",
+    "desc": "changing or removing prefix --no-prefix, default: wbp-"
+  }]
 }
